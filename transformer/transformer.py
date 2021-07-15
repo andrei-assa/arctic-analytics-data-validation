@@ -6,7 +6,7 @@ import pandas as pd
 
 class DataTransformer(object):
 
-    def __init__(self, filepath: str, verbose: bool = False) -> None:
+    def __init__(self, filepath: str, nrows: int = 100000, verbose: bool = False) -> None:
         """
 
         Args:
@@ -14,14 +14,14 @@ class DataTransformer(object):
             verbose (bool): Verbose output.
         """
         self._filepath = filepath
-        self._data = self._load_data()
+        self._data = self._load_data(nrows=nrows)
         self.data = self._data.copy()
         self._verbose = verbose
         self._transformed_data = None
 
 
-    def _load_data(self):
-        return pd.read_csv(self._filepath)
+    def _load_data(self, nrows):
+        return pd.read_csv(self._filepath, nrows=nrows)
 
     def reset(self):
         self.data = self._data.copy()
@@ -45,6 +45,7 @@ class DataTransformer(object):
             for order_id in order_id_tuple:
                 data_subset = self.data[self.data.order_id == order_id]
                 product_id_list = list(data_subset.product_id)
+                product_id_list.sort()
                 output_dict[order_id] = str(product_id_list)
             output = pd.DataFrame().from_dict(output_dict, orient="index")
             output = output.rename({0:"product_id"}, axis=1)
@@ -58,5 +59,5 @@ class DataTransformer(object):
 
 
 if __name__ == '__main__':
-    data_transformer = DataTransformer(filepath="data/order_products__prior.csv")
+    data_transformer = DataTransformer(filepath="data/order_products_prior_subset.csv")
     transformed_data = data_transformer.transform()
