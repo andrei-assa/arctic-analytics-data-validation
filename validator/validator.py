@@ -1,5 +1,3 @@
-import logging
-
 """
 Defines DataValidator class.
 """
@@ -67,7 +65,7 @@ class DataValidator(object):
             # Check that all orders are matched with at least one product. Otherwise, there exists a NULL field.
             for x in transformed_data["product_id"]:
                 if x == []:
-                    raise NonNullError
+                    raise NonNullError("product_id")
 
 
         if not self._data_format: # If data is one-row-per-product format:
@@ -86,11 +84,12 @@ class DataValidator(object):
             # Check that all products are matched with at least one order. Otherwise, there exists a NULL field.
             for x in transformed_data["order_id"]:
                 if x == []:
-                    raise NonNullError
+                    raise NonNullError("order_id")
 
-        # Check MIN and MAX values?
+        # TODO: Check other columns are also of correct data type.
+        # TODO: Check MIN and MAX values?
 
 
 if __name__ == '__main__':
     data_validator = DataValidator()
-    data_validator.validate()
+    data_validator.validate(transformed_data) # validates data that was transformed from `transformer.py`
