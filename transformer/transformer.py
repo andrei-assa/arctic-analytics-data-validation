@@ -36,24 +36,18 @@ class DataTransformer(object):
             pandas.DataFrame: Transformed data.
 
         """
-        # TODO: As implemented, runs in O(n) time, re-implement to use array broadcasting.
+
+        def _transform(x):
+            result = list(x.values)
+            result.sort()
+            return result
+
 
         if self._transformed_data is None:
-
-            output_dict = {}
-            order_id_tuple = tuple(self.data.order_id.unique())
-            for order_id in order_id_tuple:
-                data_subset = self.data[self.data.order_id == order_id]
-                product_id_list = list(data_subset.product_id)
-                product_id_list.sort()
-                output_dict[order_id] = str(product_id_list)
-            output = pd.DataFrame().from_dict(output_dict, orient="index")
-            output = output.rename({0:"product_id"}, axis=1)
-            output = output.reset_index()
-            output = output.rename({"index": "order_id"}, axis=1)
-
-            # Cache the data so it does not have to be transformed de-novo each time.
-            self._transformed_data = output
+            grouped = self.data.groupby("order_id")
+            result = grouped.agg(_transform)
+            result = result.reset_index()
+            self._transformed_data = result
 
         return self._transformed_data
 
