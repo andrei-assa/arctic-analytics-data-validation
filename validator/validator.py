@@ -2,11 +2,34 @@
 Defines DataValidator class.
 """
 
-# Requirements:
-# 1. Should identify whether data is in one-row-per-product or one-row-per-order format.
-# 2. If one-row-per-order, ensures that order ids are unique
-# 3. If one-row-per-product, transforms the data to one-row-per-order
-# 4. ... come up with additional validation rules here.
+"""
+
+    Requirements:
+    1. Should identify whether data is in one-row-per-product or one-row-per-order format.
+    2. If one-row-per-order, ensures that order ids are unique
+    3. If one-row-per-product, transforms the data to one-row-per-order
+    4. ... come up with additional validation rules here.
+    
+    Long-Format Data (one-row-per-product)
+    ----------------
+    1. Non-unique order ids
+    2. Product ids are builtins (int, str)
+    
+    
+    
+    Short-Format Data (one-row-per-order)
+    ----------------
+    1. Unique order ids
+    2. Product ids in list[int, str]
+    
+    
+    Data is either:
+        long format
+        short format
+        some other invalid format
+    
+
+"""
 
 # Defines custom-defined data validation Exceptions
 class NonUniqueValueError(Exception):
@@ -42,18 +65,46 @@ class DataValidator(object):
 
     def validate(self, transformed_data):
         # identify whether data is one-row-per-product or one-row-per-order format
-        if isinstance(transformed_data["product_id"][0], int): # if True, is one-row-per-product format
-            self._data_format = 0
+        # Don't assume product_ids and order_ids are integers
+        
+        """
+        if one-row-per-order:
+            
+        """
+        
+        self._order_ids_unique = False
+        self._product_ids_are_list = False
+        self._product_ids_are_str_or_int = False
+        self._product_ids_in_list_are_int_strings = False
+        
+        # if self._order_ids_unique and self._product_ids_are_list:
+            # self._short_format = True
+        # elif not self._order_ids_unique (and self._order_ids_str_or_int) and self._product_ids_are_str_or_int:
+            # self._long_format = True
 
-        elif isinstance(transformed_data["order_id"][0], int): # if True, is one-row-per-order format
-            self._data_format = 1
         
+        self._long_format = False
+        self._short_format = False
         
-        if self._data_format: # If data is one-row-per-order format:
+        if not isinstance(transformed_data["order_id"][0], list): # if True, is one-row-per-product format (long-format)
+            self._long_format = True
+
+        elif not isinstance(transformed_data["product_id"][0], list): # if True, is one-row-per-order format (short-format)
+            self._short_format = True
+        else:
+            raise RuntimeError
+
+
+        # TODO: serialize all columns astype(str), put the following two lines there:
+        transformed_data["order_id"] = transformed_data["order_id"].astype(str)
+        transformed_data["product_id"] = transformed_data["product_id"].astype(str)
+
+
+        if self._short_format: # If data is one-row-per-order (short format):
             
             # Check that each order id is UNIQUE. O(n)
-            if list(transformed_data["order_id"]) != set(transformed_data["order_id"]): 
-                raise NonUniqueValueError("order_id") 
+            if len(transformed_data) != len(set(transformed_data["order_id"])): 
+                raise NonUniqueValueError("order_id")
 
             # Check that each order id is correct data type (INTEGER).
             if not all([isinstance(x, int) for x in transformed_data["order_id"]]):
@@ -64,14 +115,14 @@ class DataValidator(object):
 
             # Check that all orders are matched with at least one product. Otherwise, there exists a NULL field.
             for x in transformed_data["product_id"]:
-                if x == []:
+                if not x:
                     raise NonNullError("product_id")
 
 
-        if not self._data_format: # If data is one-row-per-product format:
-    
+        if not self._long_format: # If data is one-row-per-product (long format):
+            
             # Check that each product id is UNIQUE. O(n)
-            if list(transformed_data["product_id"]) != set(transformed_data["product_id"]): 
+            if len(list(transformed_data["product_id"])) != len(set(transformed_data["product_id"])): 
                 raise NonUniqueValueError("product_id")
 
             # Check that each product id is correct data type (INTEGER).
@@ -80,10 +131,15 @@ class DataValidator(object):
             # Check that each order id is correct data type (INTEGER).
             if not all([isinstance(x, int) for y in transformed_data["order_id"]] for x in y):
                 raise DataTypeException(column_name="order_id", data=x)
+            
+            """
+                order_id    product_id
+                1           []
+            """
 
             # Check that all products are matched with at least one order. Otherwise, there exists a NULL field.
             for x in transformed_data["order_id"]:
-                if x == []:
+                if not x:
                     raise NonNullError("order_id")
 
         # TODO: Check other columns are also of correct data type.
