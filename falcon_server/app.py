@@ -13,14 +13,14 @@ class ObjRequestClass:
         """
         Purpose: Makes a simple GET request to our REST API, WITHOUT body.
         """
-        content = {
+        content = { # replace with appropriate content for Apriori algorithm.
             'name': 'Jon',
             'age': '30',
             'country': 'New Caledonia'
         }
 
         res.body = json.dumps(output)
-        print("get request on our falcon API")
+        print("GET request on our falcon API")
 
 
     """ Uncomment to switch to slightly more complex sample:
@@ -52,7 +52,7 @@ class ObjRequestClass:
         """
         data = json.loads(req.stream.read())
 
-        result = int(data['x']) + int(data['y'])
+        result = int(data['x']) + int(data['y']) # Replace with Apriori algorithm.
 
         output = {
             'msg' : 'x: {0} + y: {1} is equals {2}'.format(data['x'], data['y'], result)
