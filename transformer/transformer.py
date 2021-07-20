@@ -4,6 +4,7 @@ DataTransformer class.
 
 import pandas as pd
 
+
 class DataTransformer(object):
 
     def __init__(self, filepath: str, nrows: int = 100000, verbose: bool = False) -> None:
@@ -37,15 +38,14 @@ class DataTransformer(object):
 
         """
 
-        def _transform(x):
-            result = list(x.values)
-            result.sort()
-            return result
-
+        def _transform_to_list(x):
+            data_list = list(x.values)
+            data_list.sort()
+            return data_list
 
         if self._transformed_data is None:
             grouped = self.data.groupby("order_id")
-            result = grouped.agg(_transform)
+            result = grouped.agg(_transform_to_list)
             result = result.reset_index()
             self._transformed_data = result
 
