@@ -6,7 +6,6 @@ from pandas import DataFrame
 from typing import Optional
 
 """
-
     Requirements:
     1. Should identify whether data is in one-row-per-product or one-row-per-order format.
     2. If one-row-per-order, ensures that order ids are unique
@@ -19,7 +18,6 @@ from typing import Optional
     2. Product ids are builtins (int, str)
     
     
-    
     Short-Format Data (one-row-per-order)
     ----------------
     1. Unique order ids
@@ -30,7 +28,6 @@ from typing import Optional
         long format
         short format
         some other invalid format
-    
 
 """
 
@@ -45,7 +42,7 @@ class NonUniqueValueError(Exception):
 
 
 class NonNullError(Exception):
-    """Excaption raised when data value is missing, but it should be not null."""
+    """Excaption raised when a value is missing, but it should be NON-NULL."""
     def __init__(self, column_name, message="Some value in the column is null. Please fill in missing values."):
         self.column_name = column_name
         self.message = message
@@ -69,13 +66,7 @@ class FieldNotExistsError(Exception):
 
 class DataValidator(object):
 
-    def __init__(
-            self,
-            *,
-            data: DataFrame,
-            order_id_col_name: Optional[str] = None,
-            product_id_col_name: Optional[str] = None
-            ):
+    def __init__(self, *, data: DataFrame, order_id_col_name: Optional[str] = None, product_id_col_name: Optional[str] = None):
         self.data = data
         self._order_id_col_name = "order_id" if order_id_col_name is None else order_id_col_name
         self._product_id_col_name = "product_id" if product_id_col_name is None else product_id_col_name
@@ -84,41 +75,75 @@ class DataValidator(object):
             if field not in self.data.columns:
                 raise FieldNotExistsError(field_name=field)
 
-    def validate(self):
-        # identify whether data is one-row-per-product or one-row-per-order format
-        # Don't assume product_ids and order_ids are integers
-        
-        """
-        if one-row-per-order:
-            
-        """
 
-        self._long_format = False
+    def validate_format(self):
+        """
+        Purpose: Identifies whether data is one-row-per-product or one-row-per-order format.
+        Returns True when data is either of the two identified formats, otherwise returns False.
+
+        Note: We don't assume product_ids and order_ids are integers.
+        """
+        
+        # By default, data is neither long nor short format.
+        self._long_format = False 
         self._short_format = False
 
+
         def _check_list_like(value):
-            if isinstance(value, list):
+            if isinstance(value, list): 
+                # Regular list type: [1,2,3]
                 return True
-            elif isinstance(value, str) and "[" in value and "]" in value:
+
+            elif isinstance(value, str) and value.strip()[0] == '[' and value.strip()[-1] == ']': 
+                # String type that represents a list: '[1,2,3]', ' [1,2,3]'
                 return True
-            else:
+
+            else: # Not list-like.
                 return False
 
         order_ids_unique = self.data[self._order_id_col_name].is_unique
+
         product_ids_as_lists = list(self.data[self._product_id_col_name].apply(_check_list_like))
         all_product_ids_are_lists = all(product_ids_as_lists)
 
+        # Short format data: (1) unique order id's, (2) product id's in list[(int, str)]
         if order_ids_unique and all_product_ids_are_lists:
             self._short_format = True
-            self._long_format = False
+
+        # Long format data: (1) non-unique order id's
         elif not order_ids_unique:
-            self._short_format = False
             self._long_format = True
+
+        else:
+            print("Data is of unknown format. Please check your inputs.")
 
         return self._long_format or self._short_format
 
 
+    def validate_data_type(self):
+        """
+        Purpose: Checks that all input data in 'product id' and 'order id' columns are correct data type.
+
+        """
+        # Check that order id's are of correct data type (int, str).
+        order_ids_correct_data_type = all([isinstance(x, (int, str)) for x in self.data[self.order_id_col_name]])
+
+        # Check that product id's are of correct data type (int, str).
+        product_ids_correct_data_type = all([isinstance(x, (int, str)) for x in self.data[self.product_id_col_name]])
+
+        if not order_ids_correct_data_type:
+            raise DataTypeException(self.order_id_col_name)
+            
+        elif not product_ids_correct_data_type:
+            raise DataTypeException(self.product_id_col_name)
+
+        return order_ids_correct_data_type and product_ids_correct_data_type
+
+    # TODO: If self._long_format, transform data to self._long_format here.
+
+
 if __name__ == '__main__':
+    # TODO: May move this to test_file / test dir.
     import os
     import pandas as pd
     from transformer import DataTransformer
@@ -134,14 +159,12 @@ if __name__ == '__main__':
 
     invalid_data = pd.DataFrame()
     invalid_data["order_id"] = [1, 2, 3]
+
     # Invalid because data contains tuples instead of lists
     invalid_data["product_id"] = [("one", "two"), ("three", "four"), ("five", "six")]
     
-    for name, value in [
-        ("long", non_transformed_data),
-        ("short", transformed_data),
-        ("invalid", invalid_data)
-            ]:
+
+    for name, value in [("long", non_transformed_data), ("short", transformed_data), ("invalid", invalid_data)]:
         data_validator = DataValidator(data=value)
         result = data_validator.validate()
         print(f"format={name}", f"valid-result={result}")
