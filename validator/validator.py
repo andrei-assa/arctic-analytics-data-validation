@@ -143,7 +143,6 @@ class DataValidator(object):
 
 
 if __name__ == '__main__':
-    # TODO: May move this to test_file / test dir.
     import os
     import pandas as pd
     from transformer import DataTransformer
@@ -166,5 +165,5 @@ if __name__ == '__main__':
 
     for name, value in [("long", non_transformed_data), ("short", transformed_data), ("invalid", invalid_data)]:
         data_validator = DataValidator(data=value)
-        result = data_validator.validate()
+        result = data_validator.validate_format()
         print(f"format={name}", f"valid-result={result}")
