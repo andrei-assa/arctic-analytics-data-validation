@@ -77,9 +77,10 @@ class DataValidator(object):
 
 
     def validate_format(self):
-        """
-        Purpose: Identifies whether data is one-row-per-product or one-row-per-order format.
-        Returns True when data is either of the two identified formats, otherwise returns False.
+        """Identifies whether data is one-row-per-product or one-row-per-order format.
+        
+        Returns:
+            Boolean: Whether data is either of the two identified formats.
 
         Note: We don't assume product_ids and order_ids are integers.
         """
@@ -121,8 +122,10 @@ class DataValidator(object):
 
 
     def validate_data_type(self):
-        """
-        Purpose: Checks that all input data in 'product id' and 'order id' columns are correct data type.
+        """Checks that all input data in 'product id' and 'order id' columns are correct data type.
+
+        Returns:
+            Boolean: Whether both product ids and order ids are established data type.
 
         """
         # Check that order id's are of correct data type (int, str).
@@ -143,6 +146,8 @@ class DataValidator(object):
 
 
 if __name__ == '__main__':
+    """ Moved to test file:
+
     import os
     import pandas as pd
     from transformer import DataTransformer
@@ -167,3 +172,4 @@ if __name__ == '__main__':
         data_validator = DataValidator(data=value)
         result = data_validator.validate_format()
         print(f"format={name}", f"valid-result={result}")
+    """
