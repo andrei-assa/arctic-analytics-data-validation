@@ -69,7 +69,6 @@ class DataValidator(object):
 
     def __init__(self, *, data: DataFrame, order_id_col_name: Optional[str] = None, product_id_col_name: Optional[str] = None):
         self.is_valid = False
-        import pdb; pdb.set_trace()
         self.data = data
         self._order_id_col_name = "order_id" if order_id_col_name is None else order_id_col_name
         self._product_id_col_name = "product_id" if product_id_col_name is None else product_id_col_name
