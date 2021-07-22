@@ -4,9 +4,9 @@ from ..transformer import DataTransformer
 
 data_transformer = DataTransformer("data/order_products_prior_subset.csv")
 
+
 class Test(TestCase):
     def test_data_validator(self):
         transformed_data = data_transformer.transform()
-
-        validator = DataValidator()
-        validator.validate_format(transformed_data=transformed_data)
+        validator = DataValidator(data=transformed_data)
+        print(validator.is_valid)
