@@ -9,4 +9,4 @@ class Test(TestCase):
         transformed_data = data_transformer.transform()
 
         validator = DataValidator()
-        validator.validate(transformed_data=transformed_data)
+        validator.validate_format(transformed_data=transformed_data)

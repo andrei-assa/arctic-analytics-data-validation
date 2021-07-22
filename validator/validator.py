@@ -4,6 +4,7 @@ Defines DataValidator class.
 
 from pandas import DataFrame
 from typing import Optional
+import logging
 
 """
     Requirements:
@@ -67,28 +68,24 @@ class FieldNotExistsError(Exception):
 class DataValidator(object):
 
     def __init__(self, *, data: DataFrame, order_id_col_name: Optional[str] = None, product_id_col_name: Optional[str] = None):
+        self.is_valid = False
+        import pdb; pdb.set_trace()
         self.data = data
         self._order_id_col_name = "order_id" if order_id_col_name is None else order_id_col_name
         self._product_id_col_name = "product_id" if product_id_col_name is None else product_id_col_name
 
         for field in self._order_id_col_name, self._product_id_col_name:
             if field not in self.data.columns:
-                raise FieldNotExistsError(field_name=field)
+                raise FieldNotExistsError(field_name=field) # change to logger
+                self.is_valid = False
 
-
-    def validate_format(self):
         """Identifies whether data is one-row-per-product or one-row-per-order format.
-        
-        Returns:
-            Boolean: Whether data is either of the two identified formats.
-
         Note: We don't assume product_ids and order_ids are integers.
         """
         
         # By default, data is neither long nor short format.
         self._long_format = False 
         self._short_format = False
-
 
         def _check_list_like(value):
             if isinstance(value, list): 
@@ -116,41 +113,56 @@ class DataValidator(object):
             self._long_format = True
 
         else:
-            print("Data is of unknown format. Please check your inputs.")
+            print("Data is of unknown format. Please check your inputs.") # logger
 
-        return self._long_format or self._short_format
+        self.is_valid = any([self._long_format, self._short_format]) 
+
+        if self.is_valid: 
+            """Checks that all input data in 'product id' and 'order id' columns are correct data type."""
+            # Check that order id's are of correct data type (int, str).
+            order_ids_correct_data_type = all([isinstance(x, (int, str)) for x in self.data[self._order_id_col_name]])
+
+            # Check that product id's are of correct data type (int, str).
+            product_ids_correct_data_type = all([isinstance(x, (int, str)) for x in self.data[self._product_id_col_name]])
+
+            if not order_ids_correct_data_type:
+                raise DataTypeException(self._order_id_col_name) # change to logger
+                self.is_valid = False
+                
+            elif not product_ids_correct_data_type:
+                raise DataTypeException(self._product_id_col_name) # change to logger
+                self.is_valid = False
+
+            self.is_valid = True
+            # if passed all tests for validity:
+            # self.is_valid = True
+            # else
+            # self.is_valid = False
+
+            # TODO: If self._long_format, transform data to self._long_format here.
+
+"""
+    Long Format Data --> DataValidator --> DataTransformer --> Short Format Data
+    Short Format Data --> DataValidator --> Done
+    Invalid Data --> DataValidator --> Invalid
 
 
-    def validate_data_type(self):
-        """Checks that all input data in 'product id' and 'order id' columns are correct data type.
+validator = DataValidator("filepath")
+if validator.is_valid:
+    if validator._long_format:
+        data_transformer = DataTransformer()
+        transformed = data_transformer.transform()
+    elif validator._short_format:
+        pass
 
-        Returns:
-            Boolean: Whether both product ids and order ids are established data type.
-
-        """
-        # Check that order id's are of correct data type (int, str).
-        order_ids_correct_data_type = all([isinstance(x, (int, str)) for x in self.data[self.order_id_col_name]])
-
-        # Check that product id's are of correct data type (int, str).
-        product_ids_correct_data_type = all([isinstance(x, (int, str)) for x in self.data[self.product_id_col_name]])
-
-        if not order_ids_correct_data_type:
-            raise DataTypeException(self.order_id_col_name)
-            
-        elif not product_ids_correct_data_type:
-            raise DataTypeException(self.product_id_col_name)
-
-        return order_ids_correct_data_type and product_ids_correct_data_type
-
-    # TODO: If self._long_format, transform data to self._long_format here.
-
+"""
 
 if __name__ == '__main__':
-    """ Moved to test file:
-
     import os
     import pandas as pd
     from transformer import DataTransformer
+
+    # ipython -i validator/validator.py
 
     # Set data directory
     data_dir = "data" if "data" in os.listdir() else "../data"
@@ -158,7 +170,6 @@ if __name__ == '__main__':
     filepath = f"{data_dir}/{filename}"
 
     data_transformer = DataTransformer(filepath)
-    transformed_data = data_transformer.transform()
     non_transformed_data = data_transformer.data.copy()
 
     invalid_data = pd.DataFrame()
@@ -168,8 +179,7 @@ if __name__ == '__main__':
     invalid_data["product_id"] = [("one", "two"), ("three", "four"), ("five", "six")]
     
 
-    for name, value in [("long", non_transformed_data), ("short", transformed_data), ("invalid", invalid_data)]:
+    for name, value in [("long", non_transformed_data), ("invalid", invalid_data)]:
         data_validator = DataValidator(data=value)
-        result = data_validator.validate_format()
+        result = data_validator.is_valid
         print(f"format={name}", f"valid-result={result}")
-    """
