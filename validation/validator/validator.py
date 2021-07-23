@@ -64,11 +64,9 @@ class DataTypeException(Exception):
     def __init__(
         self,
         column_name,
-        data,
         message="Data type is incorrect. Please check that all data has correct type.",
     ):
         self.column_name = column_name
-        self.data = data
         self.message = message
         super().__init__(self.message)
 

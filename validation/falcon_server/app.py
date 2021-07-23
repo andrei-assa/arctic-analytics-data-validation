@@ -11,15 +11,12 @@ import pandas as pd
 from validation.validator import DataValidator
 
 
+# Don't rename ObjRequestClass methods, falcon expects these methods as part of API.
+
 class ObjRequestClass:
     # TODO: Enter description.
 
-    def __init__(self):
-        # import pdb; pdb.set_trace()
-        pass
-
-
-    def handle_get(
+    def on_get(
         self, req: falcon.request.Request, res: falcon.response.Response
     ) -> falcon.response.Response:
         """
@@ -40,7 +37,7 @@ class ObjRequestClass:
         raise NotImplementedError
 
 
-    def handle_post(
+    def on_post(
         self,
         req: falcon.request.Request,
         res: falcon.response.Response
@@ -57,7 +54,8 @@ class ObjRequestClass:
         output = None
 
         try:
-            json_string = req.stream.read()
+
+            json_string = req.stream.read().decode()
             try:
                 python_dictionary = json.loads(json_string)
                 try:

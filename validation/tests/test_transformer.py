@@ -1,5 +1,5 @@
 from unittest import TestCase
-from transformer import DataTransformer
+from validation.transformer import DataTransformer
 
 
 class Test(TestCase):
