@@ -6,8 +6,9 @@ import pandas as pd
 
 
 class DataTransformer(object):
-
-    def __init__(self, filepath: str, nrows: int = 100000, verbose: bool = False) -> None:
+    def __init__(
+        self, filepath: str, nrows: int = 100000, verbose: bool = False
+    ) -> None:
         """
 
         Args:
@@ -19,7 +20,6 @@ class DataTransformer(object):
         self.data = self._data.copy()
         self._verbose = verbose
         self._transformed_data = None
-
 
     def _load_data(self, nrows):
         return pd.read_csv(self._filepath, nrows=nrows)
@@ -52,6 +52,8 @@ class DataTransformer(object):
         return self._transformed_data
 
 
-if __name__ == '__main__':
-    data_transformer = DataTransformer(filepath="data/order_products_prior_subset.csv")
+if __name__ == "__main__":
+    data_transformer = DataTransformer(
+        filepath="data/order_products_prior_subset.csv"
+    )
     transformed_data = data_transformer.transform()

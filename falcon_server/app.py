@@ -6,7 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # import pdb; pdb.set_trace()
 
-from validator import DataValidator
+from validation.validator import DataValidator
 
 
 """
