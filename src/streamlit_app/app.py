@@ -31,24 +31,6 @@ sys.path.insert(0, root_directory)
 # Support(milk) = 2 / 5 = 0.4
 # Lift(milk --> butter)
 
-"""
-transaction ID     milk bread	butter	beer	diapers
-                1	1	1	0	0	0
-                2	0	0	1	0	0
-                3	0	0	0	1	1
-                4	1	1	1	0	0
-                5	0	1	0	0	0
-"""
-
-"""
-antecedents	consequents	antecedent support	consequent support	support	confidence	lift	leverage	conviction
-0	(Onion)	(Eggs)	0.6 0.8	0.6	1.00	1.25	0.12	inf
-1	(Eggs)	(Onion)	0.8	0.6	0.6	0.75	1.25	0.12	1.6
-2	(Onion, Kidney Beans)	(Eggs)	0.6	0.8	0.6	1.00	1.25	0.12	inf
-3	(Eggs, Kidney Beans)	(Onion)	0.8	0.6	0.6	0.75	1.25	0.12	1.6
-4	(Onion)	(Eggs, Kidney Beans)	0.6	0.8	0.6	1.00	1.25	0.12	inf
-5	(Eggs)	(Onion, Kidney Beans)	0.8	0.6	0.6	0.75	1.25	0.12	1.6
-"""
 
 # networkx
 # heatmap or matrix with embedded circles to represent lift / support / conviction
@@ -193,49 +175,6 @@ def market_basket_analysis():
         # 1. Store the schema of the uploaded file
         # 2. Pass dtypes to validator
 
-        """
-        data = pd.read_csv("file.csv")
-        data.dtypes
-        
-        
-        order_id             float64
-        product_id             int64
-        add_to_cart_order    float64
-        reordered            float64
-        product_name          object
-        aisle_id               int64
-        department_id          int64
-        
-         #   Column             Non-Null Count  Dtype  
-        ---  ------             --------------  -----  
-         0   order_id           4629 non-null   float64
-         1   product_id         5077 non-null   int64  
-         2   add_to_cart_order  4629 non-null   float64
-         3   reordered          4629 non-null   float64
-         4   product_name       5077 non-null   object 
-         5   aisle_id           5077 non-null   int64  
-         6   department_id      5077 non-null   int64  
-        dtypes: float64(3), int64(3), object(1)
-        memory usage: 277.8+ KB
-        
-        # TODO: Determine if certain columns are not allowed to have null rows 
-        
-        # Null values
-        order_id             448
-        product_id             0 #This is a required column, but it may have a different name in the user's file, 
-                                  so user has to specify which column in their file maps to this column --> We set 
-                                    the conditions on null values, unique values etc.
-        add_to_cart_order    448
-        reordered            448
-        product_name           0
-        aisle_id               0
-        department_id          0
-        dtype: int64
-
-
-        
-        """
-
 
         # Consider using "Strategy" design pattern by selecting relevant I/O function based on file type (see below)
 
@@ -280,19 +219,6 @@ def market_basket_analysis():
     st.subheader('Raw data')
     st.write(data)
     st.subheader('Columns in this dataset')
-
-    """
-    Issue #9: Connect the file upload function with the dropdown options to allow for selection of columns types
-    Need a way to select the column name and select the data type --> mapping (dictionary --> {column x: dtype x} )
-    
-    Possible option:
-    streamlit.selectbox(column_name) --> 
-    streamlit.selectbox(data_type) --> 
-    
-    for column_name, data_type in remap_dtypes_dictionary.items(): data[column_name] = data[column_name].astype(
-    data_type)
-    
-    """
 
     for x in data.columns:
         st.subheader(x)
