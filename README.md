@@ -55,3 +55,15 @@ curl --header "Content-Type: application/json"\
     "reordered":{"0":1,"1":1,"2":0,"3":1,"4":0,"5":1,"6":1,"7":1,"8":0,"9":1}}' \
     http://127.0.0.1:8000/test
 ```
+
+## 
+Task 1: multiple tables in excel doc -> return Err: ask user to reformat data
+Task 2: Tutorial? Sample data/ columns guideline
+Task 3: Basic cleaning data (e.g. null values etc)
+Task 4: Filtering dataset?
+
+
+
+
+
+
