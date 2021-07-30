@@ -263,3 +263,4 @@ pip-selfcheck.json
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,python,virtualenv
 {"mode":"full","isActive":false}
 falcon_server/
+.idea/

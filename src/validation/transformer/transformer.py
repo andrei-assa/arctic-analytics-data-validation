@@ -7,16 +7,26 @@ import pandas as pd
 
 class DataTransformer(object):
     def __init__(
-        self, filepath: str, nrows: int = 100000, verbose: bool = False
+        self,
+        *,
+        data: pd.DataFrame = None,
+        filepath: str = None,
+        nrows: int = 100000,
+        verbose: bool = False
     ) -> None:
-        """
 
-        Args:
-            filepath (str): Path to file.
-            verbose (bool): Verbose output.
-        """
         self._filepath = filepath
-        self._data = self._load_data(nrows=nrows)
+        self._data = data
+
+        if self._filepath is None and self._data is None:
+            raise RuntimeError("Must supply either filepath or data")
+        elif self._data is not None and self._filepath is not None:
+            raise RuntimeError("Must supply only filepath or data, not both")
+        elif self._data is not None:
+            pass
+        else:
+            self._data = self._load_data(nrows=nrows)
+
         self.data = self._data.copy()
         self._verbose = verbose
         self._transformed_data = None
@@ -31,13 +41,6 @@ class DataTransformer(object):
             print("Data has been reset")
 
     def transform(self):
-        """Transform data from one-row-per-product to one-row-per-order.
-
-        Returns:
-            pandas.DataFrame: Transformed data.
-
-        """
-
         def _transform_to_list(x):
             data_list = list(x.values)
             data_list.sort()
