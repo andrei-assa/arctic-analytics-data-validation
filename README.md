@@ -1,4 +1,52 @@
-# Validation
+# Arctic Analytics
+
+## Project Structure:
+
+```
+.
+├── README.md
+├── algorithms
+│   └── __init__.py
+├── falcon_server
+│   └── app.py
+├── pyvenv.cfg
+├── requirements.txt
+├── scripts
+├── share
+├── streamlit_app
+│   ├── app.py
+│   ├── data.db
+│   ├── test1.csv
+│   ├── test1.py
+│   └── uber_pickups.py
+├── test_file.py
+└── validation
+    ├── __init__.py
+    ├── __pycache__
+    │   └── __init__.cpython-38.pyc
+    ├── data
+    │   ├── instacart_data_subset.zip
+    │   └── order_products_prior_subset.csv
+    ├── falcon_server
+    │   ├── README.md
+    │   ├── __init__.py
+    │   ├── __pycache__
+    │   └── app.py
+    ├── tests
+    │   ├── __init__.py
+    │   ├── __pycache__
+    │   ├── test_transformer.py
+    │   └── test_validator.py
+    ├── transformer
+    │   ├── __init__.py
+    │   ├── __pycache__
+    │   └── transformer.py
+    └── validator
+        ├── __init__.py
+        ├── __pycache__
+        └── validator.py
+
+```
 
 ## Run server:
 
