@@ -264,3 +264,4 @@ pip-selfcheck.json
 {"mode":"full","isActive":false}
 falcon_server/
 .idea/
+ignored/
