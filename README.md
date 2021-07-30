@@ -1,8 +1,12 @@
-# Arctic Analytics
+# Arctic Analytics 
 
-## Project Structure:
+- [Arctic Analytics](#arctic-analytics)
+  - [Project Structure](#project-structure)
+  - [Notes from 7/30 Meeting](#notes-from-730-meeting)
 
-```
+## Project Structure
+
+```tree
 .
 ├── README.md
 ├── pyvenv.cfg
@@ -36,23 +40,9 @@
             └── validator.py
 ```
 
-## Run server:
-
-From project root directory:
-
-```bash
-gunicorn validation.falcon_server.app:api
-```
-
-
 ## Notes from 7/30 Meeting
+
 - Task 1: multiple tables in excel doc -> return Err: ask user to reformat data  
 - Task 2: Tutorial? Sample data/ columns guideline  
 - Task 3: Basic cleaning data (e.g. null values etc)  
 - Task 4: Filtering dataset?  
-
-
-
-
-
-
