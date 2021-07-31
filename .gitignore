@@ -265,3 +265,5 @@ pip-selfcheck.json
 falcon_server/
 .idea/
 ignored/
+etc/
+share/
