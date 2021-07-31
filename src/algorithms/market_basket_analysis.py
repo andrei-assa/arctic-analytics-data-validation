@@ -26,13 +26,27 @@ basket_matrix = basket.sum().unstack().reset_index().fillna(0).set_index('order_
 rules = pd.DataFrame()
 
 MIN_SUPPORT = 0.01
+from time import sleep
 
-while rules.empty:
+while rules.empty or len(rules) < 5:
+
+    MIN_SUPPORT = round(MIN_SUPPORT, 10)
+    result = (1 / MIN_SUPPORT)
     
-    MIN_SUPPORT = round(MIN_SUPPORT, 4)
+    #print(result)
+    if result % 10 == 0:
+        BASE_VALUE = MIN_SUPPORT
+        DECREMENT = BASE_VALUE / 10
+        MIN_SUPPORT = BASE_VALUE
 
-    print(f"Creating rule set with min_support = {MIN_SUPPORT}")
+    try:
+        MIN_SUPPORT = round(MIN_SUPPORT, 7)
 
-    itemsets = apriori(basket_matrix, min_support=MIN_SUPPORT, use_colnames=True)
-    rules = association_rules(itemsets)
-    MIN_SUPPORT -= 0.0005
+        print(f"Creating rule set with min_support = {MIN_SUPPORT}")
+
+        itemsets = apriori(basket_matrix, min_support=MIN_SUPPORT, use_colnames=True)
+        rules = association_rules(itemsets)
+        MIN_SUPPORT -= DECREMENT
+    except MemoryError:
+        MIN_SUPPORT += (DECREMENT / 10)
+        continue
