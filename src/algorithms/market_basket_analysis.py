@@ -112,3 +112,5 @@ while rules.empty or len(rules) < MIN_RESULTS:
         print(f"Encountered error: {error}: incrementing upward to {MIN_SUPPORT}")
         increment_upward = True
         continue
+
+print(f"Success with dataframe {len(rules)} rows long")
