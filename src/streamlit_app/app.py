@@ -16,27 +16,16 @@ sys.path.insert(0, root_directory)
 
 # New potential issues
 # Fix login process
-# Replace login checkbox with login button
-
-# Create basic instructions for using the market basket analysis --> specify which data types and columns are necessary
 
 # CI / CD --> Jenkins / Travis
 
 # pyspark ? --> Improve ML workflow / create pipelines
 # mlxtend.frequent_patterns --> apriori, association_rules
 
-# result = apriori(matrix)
-# association_rules(result)
-# Support, Conviction, Lift
-# Support(milk) = 2 / 5 = 0.4
-# Lift(milk --> butter)
-
-
 # networkx
 # heatmap or matrix with embedded circles to represent lift / support / conviction
 
 from validation.validator import DataValidator
-
 
 # Security
 #passlib,hashlib,bcrypt,scrypt
@@ -48,6 +37,7 @@ def check_hashes(password,hashed_text):
     if make_hashes(password) == hashed_text:
         return hashed_text
     return False
+
 # DB Management
 import sqlite3 
 conn = sqlite3.connect('data.db')
@@ -77,29 +67,48 @@ def go_home():
     st.subheader("Home")
 
 
+"""
+class App(object):
+    def __init__(self, title):
+        self.title = st.title(title)
+
+        # Composition
+        self.left_side_menu = LeftSideMenu() 
+
+
+"""
+
+
+
+class LeftSideMenu(self):
+
+    def __init__(self):
+        # Left Side Menu
+        menu = ["Home","Login","SignUp"]
+        choice = st.sidebar.selectbox("Menu",menu)
+        if choice == "Home":
+            go_home()
+        elif choice == "Login":
+            st.subheader("Login Section")
+            username = st.sidebar.text_input("User Name")
+            password = st.sidebar.text_input("Password",type='password')
+        
+
+
+
+class App(object):
+
+    def __init__(self, title):
+        self.title = st.title(title) 
+        self.left_side_menu = LeftSideMenu()
+
+
 def main():
     """Simple Login App"""
 
-    st.title('Artic Analytics')
-
-    ##################################
-    # Left Side Menu
-    menu = ["Home","Login","SignUp"]
-    choice = st.sidebar.selectbox("Menu",menu)
-
-    if choice == "Home":
-        go_home()
-
-    elif choice == "Login":
-        st.subheader("Login Section")
-
-        username = st.sidebar.text_input("User Name")
-        password = st.sidebar.text_input("Password",type='password')
         if st.sidebar.button("Login"):
-            # if password == '12345':
             create_usertable()
             hashed_pswd = make_hashes(password)
-
             logged_in_successfully = login_user(username,check_hashes(password,hashed_pswd))
             if logged_in_successfully:
                 st.success("Logged In as {}".format(username))

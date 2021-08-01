@@ -1,27 +1,32 @@
 """Example of market basket analysis."""
 
+# Import Dependencies
 import sys
 import pandas as pd
 import argparse
 from pathlib import Path
 import numpy as np
+
+# Add utils to sys.path
 this_file = Path(__file__)
-project_root = this_file.parent.parent.absolute()
+project_root = str(this_file.parent.parent.absolute())
 sys.path.insert(0, project_root)
 
+# Import mlxtend 
 from mlxtend.frequent_patterns import apriori, association_rules
-from src.utils.utils import get_project_root
 
+# Set up the parser
 parser = argparse.ArgumentParser("An argument parser for market basket analysis")
-
 parser.add_argument("--department", help="Select department")
 parser.add_argument("--debug", help="Enter debug mode")
 parser.add_argument("--min-support", help="Minimum support value")
 parser.add_argument("--min-results", help="Minimum number of rules to generate")
+
+# Get arguments from the parser
 args = parser.parse_args()
 
+# Set constants
 SLEEP = 0 
-
 DEPARTMENT_ID = int(args.department if args.department is not None else 5)
 MIN_SUPPORT = float(args.min_support if args.min_support is not None else 0.01)
 DEBUG_MODE = bool(args.debug)
@@ -54,13 +59,19 @@ from time import sleep
 last_success_min_support = float("inf")
 success = False
 last_min_support = None
+
 # while we have not generated any results yet...
+
+def is_decimal_of_10(min_support_value):
+    return int(np.log10(min_support_value)) == np.log10(min_support_value)
+    
+    
+
 while rules.empty or len(rules) < MIN_RESULTS:
-    sleep(SLEEP)
     # round the MIN_SUPPORT value to 10 decimal places
+
     MIN_SUPPORT = round(MIN_SUPPORT, 10)
-    # if min_support has been incrementing upward and has reached the last min_support success value without
-    # encountering success, break out of the loop
+
     if MIN_SUPPORT >= last_success_min_support:
         if (not success) or (MIN_SUPPORT == last_min_support):
             print(f"No rules able to be created with specified settings")
@@ -69,17 +80,12 @@ while rules.empty or len(rules) < MIN_RESULTS:
         break
 
     # check if we are currently on some fraction of 10
-    is_decimal_of_10 = int(np.log10(MIN_SUPPORT)) == np.log10(MIN_SUPPORT)
     
-    if is_decimal_of_10 and not increment_upward:
+    if is_decimal_of_10(MIN_SUPPORT):
         # if we are currently on some decimal of 10, set a new decrement
         DECREMENT = MIN_SUPPORT / 10
         print(f"{MIN_SUPPORT} is a decimal of 10")
     
-    if MIN_SUPPORT == last_min_support:
-        print("breaking out of loop")
-        break
-
     try:    
         last_min_support = MIN_SUPPORT
         print(f"Attempting to create association rules with min_support = {MIN_SUPPORT}") 
