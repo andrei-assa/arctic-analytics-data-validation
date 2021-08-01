@@ -6,11 +6,11 @@ import argparse
 from pathlib import Path
 import numpy as np
 this_file = Path(__file__)
-project_root = this_file.parent.parent.absolute()
+project_root = str(this_file.parent.parent.absolute())
 sys.path.insert(0, project_root)
 
 from mlxtend.frequent_patterns import apriori, association_rules
-from src.utils.utils import get_project_root
+from utils.utils import get_project_root
 
 parser = argparse.ArgumentParser("An argument parser for market basket analysis")
 

@@ -2,41 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from io import StringIO
+import mimetypes
 import sys
 from pathlib import Path
+
 this_file = Path(__file__)
 root_directory = str(this_file.parent.parent.absolute())
 sys.path.insert(0, root_directory)
-
-# Open Issues:
-# #9 Connect the file upload function with the dropdown options to allow for selection of columns types --> Andrei
-    # --> Implement two drop-down boxes to allow remapping of column types and pass dictionary to backend
-# #7 Expand the validation, provide more detailed information in the case of errors / invalid data --> Tasha
-# #10 Aggregate column types into dictionary and store these in case other modules need to use them. --> Hardeep
-
-# New potential issues
-# Fix login process
-# Replace login checkbox with login button
-
-# Create basic instructions for using the market basket analysis --> specify which data types and columns are necessary
-
-# CI / CD --> Jenkins / Travis
-
-# pyspark ? --> Improve ML workflow / create pipelines
-# mlxtend.frequent_patterns --> apriori, association_rules
-
-# result = apriori(matrix)
-# association_rules(result)
-# Support, Conviction, Lift
-# Support(milk) = 2 / 5 = 0.4
-# Lift(milk --> butter)
-
-
-# networkx
-# heatmap or matrix with embedded circles to represent lift / support / conviction
-
 from validation.validator import DataValidator
-
 
 # Security
 #passlib,hashlib,bcrypt,scrypt
@@ -48,10 +21,12 @@ def check_hashes(password,hashed_text):
     if make_hashes(password) == hashed_text:
         return hashed_text
     return False
+
 # DB Management
 import sqlite3 
 conn = sqlite3.connect('data.db')
 c = conn.cursor()
+
 # DB  Functions
 def create_usertable():
     c.execute('CREATE TABLE IF NOT EXISTS userstable(username TEXT,password TEXT)')
@@ -95,7 +70,9 @@ def main():
 
         username = st.sidebar.text_input("User Name")
         password = st.sidebar.text_input("Password",type='password')
-        if st.sidebar.button("Login"):
+        logged_in = st.sidebar.checkbox("Login")
+
+        if logged_in:
             # if password == '12345':
             create_usertable()
             hashed_pswd = make_hashes(password)
@@ -132,8 +109,6 @@ def main():
             st.info("Go to Login Menu to login")
 
 
-
-
 def market_basket_analysis():
     st.subheader("Market Basket Analysis")
     uploaded_file = st.file_uploader("Choose a file")
@@ -141,54 +116,23 @@ def market_basket_analysis():
     if uploaded_file is not None:
 
         # TODO: Implement file type handling
-        # File type handling
+        # File type handling (Note: may change to Strategy pattern)
 
-        # import mimetypes
+        file_type = mimetypes.guess_type("alcohol.csv")
 
-        ### Text ### --> pd.read_csv
-        # mime = mimetypes.guess_type(file)
-        # mimetypes.guess_type("alcohol.csv")
-        # mimetypes.guess_type("this_is_a_text_file.txt")
-        # Out[10]: ('text/plain', None)
-        # In[11]: mimetypes.guess_type("this_is_a_tab_delimited_file.tsv")
-        # Out[11]: ('text/tab-separated-values', None)
-        # Out[2]: ('text/csv', None)
+        if file_type[0] in ['text/plain', 'text/tab-separated-values', 'text/csv']: #csv types
+            uploaded_data_df = pd.read_csv(uploaded_file, nrows=100)
 
-        ### JSON ### --> pd.read_json
-        # mimetypes.guess_type("/Users/andrei_assa/1617287125679.json")
-        # Out[3]: ('application/json', None)
+        elif file_type[0] in ['application/json']: # json types
+            uploaded_data_df = pd.read_json(uploaded_file, nrows=100)
 
-        ### Excel ### --> pd.read_excel
-        # In[7]: mimetypes.guess_type("Book1.xlsx")
-        # Out[7]: ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', None)
-        # mimetypes.guess_type("no_extension_excel.xls")
-        # Out[9]: ('application/vnd.ms-excel', None)
-        # --> if the file has multiple sheets, prompt the user to select the desired sheet
+        elif file_type[0][-5:] in ['sheet', 'excel']: # excel types
+            uploaded_data_df = pd.read_excel(uploaded_file, nrows=100)
 
-        ### No extension ### --> You are on your own
-        # mimetypes.guess_type("no_extension_excel")
-        # Out[8]: (None, None)
+        else:
+            print("This file does not a permitted extension. Please upload either .csv, .tsv, .json, .xls, .xlsx, or .txt")
+       
 
-        # Issue #10: Aggregate the columns types into a dict that can be passed on to other python files
-        # Get the dtypes from the dataframe and store them.
-        # Use Cases:
-        # 1. Store the schema of the uploaded file
-        # 2. Pass dtypes to validator
-
-
-        # Consider using "Strategy" design pattern by selecting relevant I/O function based on file type (see below)
-
-        # loader_function_dictionary = {".xlsx" : pd.read_excel, ".csv": pd.read_csv}
-        # loader_function = loader_function_dictionary.get(file_extension)
-        # if it is excel, loader_function = pd.read_excel, etc, if the extension does not exist, it is None.
-        # if loader function is not None:
-            # uploaded_data_df = loader_function(uploaded_file)
-        #
-
-        # If the I/O function is valid, then try to load the file
-
-        uploaded_data_df = pd.read_csv(uploaded_file, nrows=100)
-        # Issue #7 -->
         validator = DataValidator(
             data=uploaded_data_df
             )
@@ -200,6 +144,7 @@ def market_basket_analysis():
             # TODO: Accept user input to fix the problem specified above
             # Allow user to try again?
             st.write("File is not valid")
+
     DATE_COLUMN = 'date/time'
     DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
                 'streamlit-demo-data/uber-raw-data-sep14.csv.gz')
@@ -219,6 +164,18 @@ def market_basket_analysis():
     st.subheader('Raw data')
     st.write(data)
     st.subheader('Columns in this dataset')
+
+    
+    #Issue #9: Connect the file upload function with the dropdown options to allow for selection of columns types
+    #Need a way to select the column name and select the data type --> mapping (dictionary --> {column x: dtype x} )
+    
+    #Possible option:
+    #streamlit.selectbox(column_name) --> 
+    #streamlit.selectbox(data_type) --> 
+    
+    #for column_name, data_type in remap_dtypes_dictionary.items(): data[column_name] = data[column_name].astype(
+    #data_type)
+    
 
     for x in data.columns:
         st.subheader(x)
