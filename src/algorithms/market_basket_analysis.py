@@ -1,5 +1,9 @@
-"""Example of market basket analysis."""
+"""
+Example Market Basket Analysis.
 
+Raises:
+    KeyboardInterrupt: [description]
+"""
 # Importing depdencies
 import sys
 import pandas as pd
@@ -7,6 +11,7 @@ import argparse
 from pathlib import Path
 import numpy as np
 from time import sleep
+
 this_file = Path(__file__)
 project_root = str(this_file.parent.parent.absolute())
 sys.path.insert(0, project_root)
@@ -28,7 +33,7 @@ SLEEP = 0
 # if nothing is passed from the command line.
 DEPARTMENT_ID = int(args.department if args.department is not None else 5)
 MIN_SUPPORT = float(args.min_support if args.min_support is not None else 0.01)
-DEBUG_MODE = bool(args.debug) #If we want to enter the debugger; use pdb.set_trace()
+DEBUG_MODE = bool(args.debug)  # If we want to enter the debugger; use pdb.set_trace()
 MIN_RESULTS = int(args.min_results) if args.min_results is not None else 0
 MAX_ATTEMPTS = 11
 
@@ -48,14 +53,14 @@ orders = orders.merge(products, on="product_id", how="left")
 # Getting a one-department subset from the orders dataframe based on
 # whichever department was passed in from the command line.
 # FROM HERE DOWARD, WE ARE FILTERING DATA DEPARTMENT_SUBSET BY DEPARTMENT_ID
-DEPARTMENT_SUBSET = orders[orders.department_id == DEPARTMENT_ID ]
+DEPARTMENT_SUBSET = orders[orders.department_id == DEPARTMENT_ID]
 DEPARTMENT_SUBSET = DEPARTMENT_SUBSET[["order_id", "product_name"]]
 DEPARTMENT_SUBSET["ordered"] = 1
 
 
 # Creating the basket_matrix from DEPARTMENT_SUBSET
-basket = DEPARTMENT_SUBSET.groupby(['order_id', 'product_name'])["ordered"]
-basket_matrix = basket.sum().unstack().reset_index().fillna(0).set_index('order_id')
+basket = DEPARTMENT_SUBSET.groupby(["order_id", "product_name"])["ordered"]
+basket_matrix = basket.sum().unstack().reset_index().fillna(0).set_index("order_id")
 
 # These print statements are useful for basket size.
 print(f"DEPARTMENT_ID=", DEPARTMENT_ID)
@@ -70,7 +75,9 @@ rules = pd.DataFrame()
 
 # If we specified debug mode in command line, enter here.
 if DEBUG_MODE:
-    import pdb; pdb.set_trace()
+    import pdb
+
+    pdb.set_trace()
 
 
 # last_success_min_support = float("inf")
@@ -79,7 +86,7 @@ if DEBUG_MODE:
 
 # while we have not generated any results yet...
 # Find the value of MIN_SUPPORT that is just large enough to NOT throw a memory error
-    # MAX. size of market_basket_matrix: 199557120, Department ID: 19
+# MAX. size of market_basket_matrix: 199557120, Department ID: 19
 
 # We started with an empty rules dataframe, we are going to keep checking if it is empty
 count = 0
@@ -90,12 +97,12 @@ while rules.empty or len(rules) < MIN_RESULTS:
         raise KeyboardInterrupt
     else:
         print(f"Attempt #{count}")
-    
+
     # If we are sleeping i.e. slowing down the program, do that now.
     sleep(SLEEP)
-    
+
     # round the MIN_SUPPORT value to 10 decimal places
-    # if starting at 0.01 --> 0.009 --> 0.008 --> 
+    # if starting at 0.01 --> 0.009 --> 0.008 -->
     # start 0.01 --> 0.001 --> if empty --> 0.0001
     #                0.001 --> memory error --> 0.005
     # 10e-10 --> end
@@ -115,41 +122,42 @@ while rules.empty or len(rules) < MIN_RESULTS:
 
     # check if we are currently on some fraction of 10
     # is_decimal_of_10 = int(np.log10(MIN_SUPPORT)) == np.log10(MIN_SUPPORT)
-    
-    
+
     #     # if we are currently on some decimal of 10, set a new decrement
     #     print(f"{MIN_SUPPORT} is a decimal of 10")
-    
+
     # if MIN_SUPPORT == last_min_support:
     #     print("breaking out of loop")
     #     break
 
-    try:    
+    try:
         last_min_support = MIN_SUPPORT
-        print(f"Attempting to create association rules with min_support = {MIN_SUPPORT}")
+        print(
+            f"Attempting to create association rules with min_support = {MIN_SUPPORT}"
+        )
 
         # Two main dataframes of while loop
-        # APRIORI_RESULT must be filtered for baskets that only contain single items. 
-        apriori_result = apriori(basket_matrix, min_support=MIN_SUPPORT, use_colnames=True)
+        # APRIORI_RESULT must be filtered for baskets that only contain single items.
+        apriori_result = apriori(
+            basket_matrix, min_support=MIN_SUPPORT, use_colnames=True
+        )
         # TODO: filter out rules where only single item
         # apriori_result = apriori_results[apriori_result.itemsets > 1]
         rules = association_rules(apriori_result)
 
-
         # if either of these fails due to memory issues, go to except block
         # if rules is empty, go to the start
         if apriori_results.empty or rules.empty:
-                
-                MIN_SUPPORT /= 10 
+            MIN_SUPPORT /= 10
             continue
-        
+
         elif not rules.empty:
             # if rules is not empty, we were successful; but were enough rules generated?
             print(f"Success at {MIN_SUPPORT}")
             last_success_min_support = MIN_SUPPORT
             success = True
             print(f"Last success at {last_success_min_support}")
-    
+
     except Exception as e:
         # apriori_result or rules were not generated due to memory constrainsts; increase the MIN_SUPPORT
         error = e

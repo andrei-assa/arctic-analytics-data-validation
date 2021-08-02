@@ -2,6 +2,8 @@
 
 - [Arctic Analytics](#arctic-analytics)
   - [Project Structure](#project-structure)
+  - [Algorithms](#algorithms)
+    - [Market Basket Analysis](#market-basket-analysis)
   - [Notes from 7/30 Meeting](#notes-from-730-meeting)
 
 ## Project Structure
@@ -39,6 +41,12 @@
             ├── __init__.py
             └── validator.py
 ```
+
+## Algorithms
+
+### Market Basket Analysis
+
+![Image](images/mermaid-diagram-20210802162612.png)
 
 ## Notes from 7/30 Meeting
 
