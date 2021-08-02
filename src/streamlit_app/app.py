@@ -2,63 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from io import StringIO
-#import mimetypes
-import os
+import mimetypes
 import sys
 from pathlib import Path
-
 
 this_file = Path(__file__)
 root_directory = str(this_file.parent.parent.absolute())
 sys.path.insert(0, root_directory)
-
 from validation.validator import DataValidator
-
-# Open Issues:
-# #9 Connect the file upload function with the dropdown options to allow for selection of columns types --> Andrei
-    # --> Implement two drop-down boxes to allow remapping of column types and pass dictionary to backend
-# #7 Expand the validation, provide more detailed information in the case of errors / invalid data --> Tasha
-# #10 Aggregate column types into dictionary and store these in case other modules need to use them. --> Hardeep
-
-# New potential issues
-# Fix login process
-# Replace login checkbox with login button
-
-# Create basic instructions for using the market basket analysis --> specify which data types and columns are necessary
-
-# CI / CD --> Jenkins / Travis
-
-# pyspark ? --> Improve ML workflow / create pipelines
-# mlxtend.frequent_patterns --> apriori, association_rules
-
-# result = apriori(matrix)
-# association_rules(result)
-# Support, Conviction, Lift
-# Support(milk) = 2 / 5 = 0.4
-# Lift(milk --> butter)
-
-
-#transaction ID     milk bread	butter	beer	diapers
-#                1	1	1	0	0	0
-#               2	0	0	1	0	0
-#               3	0	0	0	1	1
-#               4	1	1	1	0	0
-#               5	0	1	0	0	0
-
-
-
-#antecedents	consequents	antecedent support	consequent support	support	confidence	lift	leverage	conviction
-#0	(Onion)	(Eggs)	0.6 0.8	0.6	1.00	1.25	0.12	inf
-#1	(Eggs)	(Onion)	0.8	0.6	0.6	0.75	1.25	0.12	1.6
-#2	(Onion, Kidney Beans)	(Eggs)	0.6	0.8	0.6	1.00	1.25	0.12	inf
-#3	(Eggs, Kidney Beans)	(Onion)	0.8	0.6	0.6	0.75	1.25	0.12	1.6
-#4	(Onion)	(Eggs, Kidney Beans)	0.6	0.8	0.6	1.00	1.25	0.12	inf
-#5	(Eggs)	(Onion, Kidney Beans)	0.8	0.6	0.6	0.75	1.25	0.12	1.6
-
-
-# networkx
-# heatmap or matrix with embedded circles to represent lift / support / conviction
-
 
 # Security
 #passlib,hashlib,bcrypt,scrypt
@@ -178,56 +129,6 @@ def market_basket_analysis():
 
         uploaded_data_df = loader_function(uploaded_file)
         print("\nData displayed to frame.")
-        
-        # Issue #10: Aggregate the columns types into a dict that can be passed on to other python files
-        # Get the dtypes from the dataframe and store them.
-        # Use Cases:
-        # 1. Store the schema of the uploaded file
-        # 2. Pass dtypes to validator
-        
-        #data = pd.read_csv("file.csv")
-        #data.dtypes
-        
-        
-        #order_id             float64
-        #product_id             int64
-        #add_to_cart_order    float64
-        #reordered            float64
-        #product_name          object
-        #aisle_id               int64
-        #department_id          int64
-        
-        #   Column             Non-Null Count  Dtype  
-        #---  ------             --------------  -----  
-        # 0   order_id           4629 non-null   float64
-        # 1   product_id         5077 non-null   int64  
-        # 2   add_to_cart_order  4629 non-null   float64
-        # 3   reordered          4629 non-null   float64
-        # 4   product_name       5077 non-null   object 
-        # 5   aisle_id           5077 non-null   int64  
-        # 6   department_id      5077 non-null   int64  
-        #dtypes: float64(3), int64(3), object(1)
-        #memory usage: 277.8+ KB
-        
-        # TODO: Determine if certain columns are not allowed to have null rows 
-        
-        # Null values
-        #order_id             448
-        #product_id             0 #This is a required column, but it may have a different name in the user's file, 
-        #                          so user has to specify which column in their file maps to this column --> We set 
-        #                            the conditions on null values, unique values etc.
-        #add_to_cart_order    448
-        #reordered            448
-        #product_name           0
-        #aisle_id               0
-        #department_id          0
-        #dtype: int64
-
-
-        # If the I/O function is valid, then try to load the file
-
-        # Issue #7 -->
-        #uploaded_data_df = pd.read_csv(uploaded_file, nrows=100)
 
         validator = DataValidator(
             data=uploaded_data_df
