@@ -115,23 +115,20 @@ def market_basket_analysis():
     # TODO: Add error handling for empty file
     if uploaded_file is not None:
 
-        # TODO: Implement file type handling
-        # File type handling (Note: may change to Strategy pattern)
+        # File type handling
+        file_name = uploaded_file.name
+        file_extension = os.path.splitext(file_name)[1]
+        print("\nUploaded File Name: ", file_name, "\tFile Extension: ", file_extension)
 
-        file_type = mimetypes.guess_type("alcohol.csv")
+        loader_function_dictionary = {'.txt': pd.read_csv, '.tsv': pd.read_csv, '.csv': pd.read_csv, \
+            '.json': pd.read_json, '.xls': pd.read_excel, '.xlsx': pd.read_excel}
+        loader_function = loader_function_dictionary[file_extension] if file_extension in loader_function_dictionary else \
+            "This file does not a permitted extension. Please upload either .csv, .tsv, .json, .xls, .xlsx, or .txt"
 
-        if file_type[0] in ['text/plain', 'text/tab-separated-values', 'text/csv']: #csv types
-            uploaded_data_df = pd.read_csv(uploaded_file, nrows=100)
+        print("\nData loading to frame...")
 
-        elif file_type[0] in ['application/json']: # json types
-            uploaded_data_df = pd.read_json(uploaded_file, nrows=100)
-
-        elif file_type[0][-5:] in ['sheet', 'excel']: # excel types
-            uploaded_data_df = pd.read_excel(uploaded_file, nrows=100)
-
-        else:
-            print("This file does not a permitted extension. Please upload either .csv, .tsv, .json, .xls, .xlsx, or .txt")
-       
+        uploaded_data_df = loader_function(uploaded_file)
+        print("\nData displayed to frame.")
 
         validator = DataValidator(
             data=uploaded_data_df
