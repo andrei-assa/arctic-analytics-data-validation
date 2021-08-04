@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from io import StringIO
 import mimetypes
+import os
 import sys
 from pathlib import Path
 
@@ -10,6 +11,7 @@ this_file = Path(__file__)
 root_directory = str(this_file.parent.parent.absolute())
 sys.path.insert(0, root_directory)
 from validation.validator import DataValidator
+from validation.transformer import DataTransformer
 
 # Security
 #passlib,hashlib,bcrypt,scrypt
@@ -130,11 +132,26 @@ def market_basket_analysis():
         uploaded_data_df = loader_function(uploaded_file)
         print("\nData displayed to frame.")
 
+
         validator = DataValidator(
             data=uploaded_data_df
             )
         if validator.is_valid:
             # TODO: Validator should return a more specific reason why data was not valid.
+            
+            # Long Format Data --> DataValidator --> DataTransformer --> Short Format Data
+            # Short Format Data --> DataValidator --> Done
+            # Invalid Data --> DataValidator --> Invalid
+            if validator._long_format:
+                data_transformer = DataTransformer(data=uploaded_data_df)
+                transformed_data = data_transformer.transform()
+
+            elif validator._short_format:
+                pass
+
+            else:
+                print("Data is of unknown format. Please correct your data format")
+
             st.write("File is valid")
             st.write(uploaded_data_df)
         else:
