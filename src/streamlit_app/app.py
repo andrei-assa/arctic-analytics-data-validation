@@ -7,6 +7,11 @@ import os
 import sys
 from pathlib import Path
 
+# For viz
+from bokeh.plotting import figure
+from bokeh.models import ColumnDataSource, CustomJS
+from streamlit_bokeh_events import streamlit_bokeh_events
+
 this_file = Path(__file__)
 root_directory = str(this_file.parent.parent.absolute())
 sys.path.insert(0, root_directory)
@@ -179,6 +184,8 @@ def market_basket_analysis():
     st.write(data)
     st.subheader('Columns in this dataset')
 
+    visualize_data(uploaded_data_df)
+
     
     #Issue #9: Connect the file upload function with the dropdown options to allow for selection of columns types
     #Need a way to select the column name and select the data type --> mapping (dictionary --> {column x: dtype x} )
@@ -189,12 +196,24 @@ def market_basket_analysis():
     
     #for column_name, data_type in remap_dtypes_dictionary.items(): data[column_name] = data[column_name].astype(
     #data_type)
-    
-
+    """
     for x in data.columns:
         st.subheader(x)
         options = st.multiselect('Specify the column type for ' + x, ['String', 'Int', 'Float'], ['Int', 'String'])
         st.write('You selected:', options)
+    """
+
+def visualize_data(data):
+    print("Creating visualization...")
+    st.subheader('Results visualized')
+    #Bar Chart
+    to_visualize = data.head()
+    st.bar_chart(to_visualize['product_id'])
+
+    chart_data = pd.DataFrame(data[:20], columns=['add_to_cart_order', 'reordered'])
+    st.area_chart(chart_data)
+    
+    print("Results visualized.")
 
 
 if __name__ == '__main__':
