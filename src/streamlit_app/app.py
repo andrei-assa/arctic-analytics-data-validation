@@ -3,13 +3,20 @@ import pandas as pd
 import numpy as np
 from io import StringIO
 import mimetypes
+import os
 import sys
 from pathlib import Path
+
+# For viz
+from bokeh.plotting import figure
+from bokeh.models import ColumnDataSource, CustomJS
+from streamlit_bokeh_events import streamlit_bokeh_events
 
 this_file = Path(__file__)
 root_directory = str(this_file.parent.parent.absolute())
 sys.path.insert(0, root_directory)
 from validation.validator import DataValidator
+from validation.transformer import DataTransformer
 
 # Security
 #passlib,hashlib,bcrypt,scrypt
@@ -115,29 +122,41 @@ def market_basket_analysis():
     # TODO: Add error handling for empty file
     if uploaded_file is not None:
 
-        # TODO: Implement file type handling
-        # File type handling (Note: may change to Strategy pattern)
+        # File type handling
+        file_name = uploaded_file.name
+        file_extension = os.path.splitext(file_name)[1]
+        print("\nUploaded File Name: ", file_name, "\tFile Extension: ", file_extension)
 
-        file_type = mimetypes.guess_type("alcohol.csv")
+        loader_function_dictionary = {'.txt': pd.read_csv, '.tsv': pd.read_csv, '.csv': pd.read_csv, \
+            '.json': pd.read_json, '.xls': pd.read_excel, '.xlsx': pd.read_excel}
+        loader_function = loader_function_dictionary[file_extension] if file_extension in loader_function_dictionary else \
+            "This file does not a permitted extension. Please upload either .csv, .tsv, .json, .xls, .xlsx, or .txt"
 
-        if file_type[0] in ['text/plain', 'text/tab-separated-values', 'text/csv']: #csv types
-            uploaded_data_df = pd.read_csv(uploaded_file, nrows=100)
+        print("\nData loading to frame...")
 
-        elif file_type[0] in ['application/json']: # json types
-            uploaded_data_df = pd.read_json(uploaded_file, nrows=100)
+        uploaded_data_df = loader_function(uploaded_file)
+        print("\nData displayed to frame.")
 
-        elif file_type[0][-5:] in ['sheet', 'excel']: # excel types
-            uploaded_data_df = pd.read_excel(uploaded_file, nrows=100)
-
-        else:
-            print("This file does not a permitted extension. Please upload either .csv, .tsv, .json, .xls, .xlsx, or .txt")
-       
 
         validator = DataValidator(
             data=uploaded_data_df
             )
         if validator.is_valid:
             # TODO: Validator should return a more specific reason why data was not valid.
+            
+            # Long Format Data --> DataValidator --> DataTransformer --> Short Format Data
+            # Short Format Data --> DataValidator --> Done
+            # Invalid Data --> DataValidator --> Invalid
+            if validator._long_format:
+                data_transformer = DataTransformer(data=uploaded_data_df)
+                transformed_data = data_transformer.transform()
+
+            elif validator._short_format:
+                pass
+
+            else:
+                print("Data is of unknown format. Please correct your data format")
+
             st.write("File is valid")
             st.write(uploaded_data_df)
         else:
@@ -165,6 +184,8 @@ def market_basket_analysis():
     st.write(data)
     st.subheader('Columns in this dataset')
 
+    visualize_data(uploaded_data_df)
+
     
     #Issue #9: Connect the file upload function with the dropdown options to allow for selection of columns types
     #Need a way to select the column name and select the data type --> mapping (dictionary --> {column x: dtype x} )
@@ -175,12 +196,24 @@ def market_basket_analysis():
     
     #for column_name, data_type in remap_dtypes_dictionary.items(): data[column_name] = data[column_name].astype(
     #data_type)
-    
-
+    """
     for x in data.columns:
         st.subheader(x)
         options = st.multiselect('Specify the column type for ' + x, ['String', 'Int', 'Float'], ['Int', 'String'])
         st.write('You selected:', options)
+    """
+
+def visualize_data(data):
+    print("Creating visualization...")
+    st.subheader('Results visualized')
+    #Bar Chart
+    to_visualize = data.head()
+    st.bar_chart(to_visualize['product_id'])
+
+    chart_data = pd.DataFrame(data[:20], columns=['add_to_cart_order', 'reordered'])
+    st.area_chart(chart_data)
+    
+    print("Results visualized.")
 
 
 if __name__ == '__main__':
