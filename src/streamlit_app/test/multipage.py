@@ -27,10 +27,25 @@ class MultiPage:
                 "title": title, 
                 "function": func
             })
-
+    def runforms(self):
+        pagelen = len(self.pages)
+        #col = list(range(pagelen))
+        #global()['col' % pagelen] = st.columns(1)
+        st.write(len(self.pages),self.pages[0]["title"],col1)
+        for x,y in enumerate(self.pages):
+            st.write(x,y,col)
+            #col[x] = st.columns(1)
+            #with col[x]:
+                #st.header("Churn Modeling")
+            if st.button(y["title"]):
+                y["function"]()
+            #col[x] = st.columns(x)
+            #with colx:
+                #st.header("Churn Modeling")
     def run(self):
         # Drodown to select the page to run  
-        page = st.sidebar.selectbox(
+
+        page = st.selectbox(
             'App Navigation', 
             self.pages, 
             format_func=lambda page: page['title']
