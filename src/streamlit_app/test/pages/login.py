@@ -51,17 +51,16 @@ def signupnewuser(c,conn,username,password):
     
 def app(c,conn):
     text_input_container1 = st.empty()
-    text_input_container2 = st.empty()
-    button_container = st.empty()
-    username = text_input_container1.text_input("User Name")
-    password = text_input_container2.text_input("Password",type='password')
-    
-    if button_container.button('Login'):
+    with text_input_container1.container():
+        form = st.form(key='login-form')
+        username = form.text_input("User Name")
+        password = form.text_input("Password",type='password')
+        submit = form.form_submit_button('Login')
+
+    if submit:
         status,uname = loginuser(c,conn, username,password)
         if status is True:
             text_input_container1.empty()
-            text_input_container2.empty()
-            button_container.empty()
             return(status,uname)
         
     

@@ -3,11 +3,11 @@ from numpy.core.defchararray import lower
 import streamlit as st
 import numpy as np
 import pandas as pd
-#from pages import utils
+from pages import utils
 
 
 def app():
-    st.markdown("## Data Upload")
+    #st.markdown("## Data Upload")
 
     # Upload the dataset and save as csv
     st.markdown("### Upload a csv file for analysis.") 
@@ -30,7 +30,7 @@ def app():
         
         # Raw data 
         st.dataframe(data)
-        data.to_csv('data/main_data.csv', index=False)
+        #data.to_csv('data/main_data.csv', index=False)
 
         # Collect the categorical and numerical columns 
         
@@ -46,7 +46,7 @@ def app():
         # Save the columns as a dataframe with categories
         # Here column_name is the name of the field and the type is whether it's numerical or categorical
         columns_df = pd.DataFrame(columns, columns = ['column_name', 'type'])
-        columns_df.to_csv('data/metadata/column_type_desc.csv', index = False)
+        #columns_df.to_csv('data/metadata/column_type_desc.csv', index = False)
 
         # Display columns 
         st.markdown("**Column Name**-**Type**")
