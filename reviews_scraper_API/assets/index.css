@@ -1,0 +1,47 @@
+h1 {
+  position: absolute;
+  top: 200px;
+  left: 375px;
+  text-align: center;
+}
+
+h3 {
+  position: absolute;
+  top: 160px;
+  left: 375px;
+  text-align: center;
+}
+
+p {
+  position: absolute;
+  top: 255px;
+  left: 375px;
+  text-align: center;
+}
+
+#searchbar {
+  position: absolute;
+  top: 355px;
+  left: 375px;
+}
+
+#searchbar {
+  height: 30px;
+  width: 500px;
+}
+
+#searchbutton {
+  position: absolute;
+  top: 357px;
+  left: 895px;
+}
+
+#searchbutton {
+  height: 30px;
+}
+
+#video {
+  position: absolute;
+  top: 387px;
+  left: 375px;
+}

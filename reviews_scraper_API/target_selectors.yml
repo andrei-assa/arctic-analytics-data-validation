@@ -1,0 +1,42 @@
+product_title:
+  css: "h1.Heading__StyledHeading-sc-1mp23s9-0 span"
+  xpath: null
+  type: Text
+store_name:
+  css: "div.styles__StyledProductDetailsTitleRelatedLinks-h3ukx9-0 span"
+  xpath: null
+  type: Text
+price:
+  css: div.web-migration-tof__PriceFontSize-sc-14z8sos-16
+  xpath: null
+  type: Text
+category:
+  css: "span.h-text-grayDarkest:nth-of-type(4) a.Link-sc-1khjl8b-0 span"
+  xpath: null
+  type: Text
+reviews:
+  css: div.ReviewCard-sc-1hvj2iv-6
+  xpath: null
+  multiple: true
+  type: Text
+  children:
+    title:
+      css: h3.Heading__StyledHeading-sc-1mp23s9-0
+      xpath: null
+      type: Text
+    content:
+      css: div.h-margin-t-default
+      xpath: null
+      type: Text
+    verified:
+      css: span.h-text-greenDark
+      xpath: null
+      type: Text
+    date:
+      css: "div.h-text-sm span:nth-of-type(2)"
+      xpath: null
+      type: Text
+    recommended:
+      css: span.h-padding-l-tiny
+      xpath: null
+      type: Text
