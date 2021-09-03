@@ -1,0 +1,38 @@
+product_title:
+  css: h1.wt-text-body-03
+  xpath: null
+  type: Text
+price:
+  css: p.wt-text-title-03
+  xpath: null
+  type: Text
+store_name:
+  css: "p.wt-text-body-01 span"
+  xpath: null
+  type: Text
+num_sales:
+  css: "div.wt-display-inline-flex-xs span.wt-text-caption"
+  xpath: null
+  type: Text
+reviews:
+  css: "div.wt-pl-xs-0 div.wt-grid__item-xs-12"
+  xpath: null
+  multiple: true
+  type: Text
+  children:
+    comment:
+      css: p.wt-text-truncate--multi-line
+      xpath: null
+      type: Text
+    author:
+      css: a.wt-text-link
+      xpath: null
+      type: Text
+    rating:
+      css: "div.wt-flex-md-3 div.wt-mb-xs-1"
+      xpath: null
+      type: Text
+    variation:
+      css: "li.variation-info p.wt-text-caption"
+      xpath: null
+      type: Text

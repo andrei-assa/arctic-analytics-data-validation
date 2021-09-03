@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="UTF-8" />
+
+    <title>Get Product Reviews</title>
+    <style>
+      h1 {
+        position: absolute;
+        top: 200px;
+        left: 375px;
+        text-align: center;
+      }
+
+      h3 {
+        position: absolute;
+        top: 160px;
+        left: 375px;
+        text-align: center;
+      }
+
+      p {
+        position: absolute;
+        top: 255px;
+        left: 375px;
+        text-align: center;
+      }
+
+      #searchbar {
+        position: absolute;
+        top: 355px;
+        left: 375px;
+      }
+
+      #searchbar {
+        height: 30px;
+        width: 500px;
+      }
+
+      #searchbutton {
+        position: absolute;
+        top: 357px;
+        left: 895px;
+      }
+
+      #searchbutton {
+        height: 30px;
+      }
+
+      #video {
+        position: absolute;
+        top: 407px;
+        left: 375px;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- styles -->
+  </head>
+  <body>
+    <div class="container">
+      <h3>Arctic Analytics Scraper API</h3>
+      <h1>Get Product Reviews</h1>
+      <br />
+      <div id="content"></div>
+    </div>
+    <!-- scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <div>
+      <p>Enter the product's link on Amazon:</p>
+      <p style="color: grey; position: absolute; top: 275px; left: 375px">
+        e.g.
+        https://www.amazon.com/MONDAY-MOOSE-Decorative-Reversible-Included/dp/B08H4KJPV7/ref=cm_cr_arp_d_product_top?ie=UTF8
+      </p>
+      <input
+        id="searchbar"
+        onkeyup="search_product()"
+        type="text"
+        name="search"
+        placeholder="Search products.."
+      />
+      <button id="searchbutton">Search</button>
+    </div>
+
+    <script>
+      function search_product() {
+        var button = document.getElementById("searchbutton");
+
+        button.onclick = function () {
+          var text = document.getElementById("searchbar").value;
+          window.open("http://localhost:5000/?url=" + text);
+        };
+      }
+    </script>
+  </body>
+</html>
