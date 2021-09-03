@@ -51,7 +51,7 @@
         <script>
         function SubForm (){
             $.ajax({
-                url:'https://api.apispreadsheets.com/data/17505/',
+                url:'https://api.apispreadsheets.com/data/17749/',
                 type:'post',
                 data:$("#myForm").serializeArray(),
                 success: function (res) {
@@ -181,7 +181,7 @@
             <input type="radio" id="subscribed" name="subscribed" value="No" /> No<br/>
             <br/>
           </form>
-          <button onclick="SubForm(); location.href='#thanks-for-joining'">
+          <button onclick="SubForm()">
             Submit
           </button>
 
