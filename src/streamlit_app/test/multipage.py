@@ -42,7 +42,7 @@ class MultiPage:
             #col[x] = st.columns(x)
             #with colx:
                 #st.header("Churn Modeling")
-    def run(self):
+    def run(self,data):
         # Drodown to select the page to run  
 
         page = st.selectbox(
@@ -51,4 +51,4 @@ class MultiPage:
             format_func=lambda page: page['title']
         )
         # run the app function 
-        page['function']()
+        return page['function'](data)

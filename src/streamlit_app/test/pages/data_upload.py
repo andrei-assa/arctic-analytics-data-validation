@@ -55,3 +55,4 @@ def app():
         
         st.markdown("""The above are the automated column types detected by the application in the data. 
         In case you wish to change the column types, head over to the **Column Change** section. """)
+        return data

@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 # Custom imports 
 from multipage import MultiPage
@@ -11,17 +12,17 @@ import sqlite3
 conn = sqlite3.connect('data.db')
 c = conn.cursor()
 
-def algo():
-
+def algo(df):
     # Add all your applications (pages) here
     #app.add_page("Upload Data", data_upload.app)
     app.add_page("Market Basket Analysis", MBA.app)
     app.add_page("Linear regression", linearregression.app)
-    app.add_page("Report",report.app)
     #app.add_page("Y-Parameter Optimization",redundant.app)
     # The main app to be run to get the side bar
     #app.runforms()
-    app.run()
+    return app.run(df)
+    
+def multiboxes():
     st.title('Arctic Analytics Algorithms')
     col1, col2, col3 = st.columns(3)
     col4, col5, col6 = st.columns(3)
@@ -62,22 +63,24 @@ def algo():
             submitted6 = st.form_submit_button("Get started")
     
 def uploaddata():
-    data_upload.app()
+    return data_upload.app()
+    
 
 def loggedin():
     st.sidebar.write("Welcome "+st.session_state.key)
     algooutput = ""
-    if algooutput == "Market Basket Analysis":
-        MBA.app()
-    else:
-        uploaddata()
-        algooutput = algo()
-        st.sidebar.write(algooutput)
+    df = uploaddata()
+    finaldf = algo(df)
+    if finaldf is not None:
+        report.app(finaldf)
+    #import pdb
+    #pdb.set_trace()
+    #st.dataframe(finaldf)
+    st.sidebar.write(algooutput)
+        
     
     
-
-
-    #https://towardsdatascience.com/creating-multipage-applications-using-streamlit-efficiently-b58a58134030
+#https://towardsdatascience.com/creating-multipage-applications-using-streamlit-efficiently-b58a58134030
     
     
 # Create an instance of the app 
@@ -98,9 +101,11 @@ t = st.empty()
         #t.empty()
 
 # Initialization of sessionstate so that users dont have to login again
+
 if 'key' not in st.session_state:
    logedin = login.app(c,conn)
-   if logedin[0]: 
-       st.session_state['key'] = logedin[1]
-       loggedin()
+   if bool(logedin) != False:
+        st.session_state['key'] = logedin[1]
+        loggedin()
+
 else:loggedin()
