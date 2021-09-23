@@ -1,0 +1,13 @@
+graph TD
+    A[No rules generated yet] --> B[Try to generate rules]
+    B --> NoRules[No rules generated]
+    B --> MemErr[Memory Error]
+    B --> HaveRules[Rules Generated]
+    MemErr --> Increment[Increment MIN_SUPPORT]
+    Increment --> B
+    HaveRules --> NotEnough[Rules < MIN_RESULTS]
+    NotEnough --> None[Decrement MIN_SUPPORT]
+    None --> B
+    NoRules --> A
+    HaveRules --> F[Rules >= MIN_RESULTS]
+F --> Done[Done]
